@@ -1,5 +1,4 @@
 import { Module, Scope } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
 import { PrismaClientManager } from './prisma-client-manager';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
@@ -8,7 +7,7 @@ import { Request } from 'express';
   providers: [
     PrismaClientManager,
     {
-      provide: PrismaService,
+      provide: 'PrismaService',
       scope: Scope.REQUEST,
       inject: [REQUEST, PrismaClientManager],
       useFactory: (
@@ -20,6 +19,6 @@ import { Request } from 'express';
       },
     },
   ],
-  exports: [PrismaService],
+  exports: ['PrismaService'],
 })
 export class PrismaModule {}

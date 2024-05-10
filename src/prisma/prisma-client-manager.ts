@@ -30,6 +30,7 @@ export class PrismaClientManager implements OnModuleDestroy {
     // create and cache a new client when needed
     if (!prismaClient) {
       const databaseUrl = process.env.DATABASE_URL!.replace('public', tenantId);
+      console.log(databaseUrl);
 
       prismaClient = new PrismaClient({
         datasources: {
