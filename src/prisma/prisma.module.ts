@@ -1,24 +1,31 @@
 import { Module, Scope } from '@nestjs/common';
 import { PrismaClientManager } from './prisma-client-manager';
 import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
+import { PrismaClient } from '@prisma/client';
+
+export interface ContextPayload {
+  tenantId: string;
+}
 
 @Module({
   providers: [
     PrismaClientManager,
     {
-      provide: 'PrismaService',
+      provide: PrismaClient,
       scope: Scope.REQUEST,
+      durable: true,
       inject: [REQUEST, PrismaClientManager],
       useFactory: (
-        request: Request,
+        ctxPayload: ContextPayload,
         prismaClientManager: PrismaClientManager,
       ) => {
-        const prismaClient = prismaClientManager.getPrismaClient(request);
+        const prismaClient = prismaClientManager.getPrismaClient(
+          ctxPayload.tenantId,
+        );
         return prismaClient;
       },
     },
   ],
-  exports: ['PrismaService'],
+  exports: [PrismaClient],
 })
 export class PrismaModule {}
