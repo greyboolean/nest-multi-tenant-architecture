@@ -1,7 +1,7 @@
 import { Module, Scope } from '@nestjs/common';
 import { PrismaClientManager } from './prisma-client-manager';
 import { REQUEST } from '@nestjs/core';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from './prisma.service';
 
 export interface ContextPayload {
   tenantId: string;
@@ -11,7 +11,7 @@ export interface ContextPayload {
   providers: [
     PrismaClientManager,
     {
-      provide: PrismaClient,
+      provide: PrismaService,
       scope: Scope.REQUEST,
       durable: true,
       inject: [REQUEST, PrismaClientManager],
@@ -26,6 +26,6 @@ export interface ContextPayload {
       },
     },
   ],
-  exports: [PrismaClient],
+  exports: [PrismaService],
 })
 export class PrismaModule {}
