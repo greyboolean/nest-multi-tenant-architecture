@@ -1,8 +1,14 @@
 import { execSync } from 'child_process';
+import * as dotenv from 'dotenv';
 
-const tenants = ['tenant1', 'tenant2', 'tenant3']; // replace with your actual tenants
+dotenv.config();
+
+const tenants = process.env.TENANTS.split(',');
 
 for (const tenant of tenants) {
-  process.env.DATABASE_URL = `postgresql://user:password@localhost:5432/mydatabase?schema=${tenant}`;
-  execSync('npx prisma migrate dev', { stdio: 'inherit' });
+  const databaseUrl = process.env.DATABASE_URL.replace('public', tenant);
+  execSync(`npx prisma migrate dev`, {
+    env: { ...process.env, DATABASE_URL: databaseUrl },
+    stdio: 'inherit',
+  });
 }

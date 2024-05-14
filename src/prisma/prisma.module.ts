@@ -1,8 +1,11 @@
 import { Module, Scope } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
 import { PrismaClientManager } from './prisma-client-manager';
 import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
+import { PrismaService } from './prisma.service';
+
+export interface ContextPayload {
+  tenantId: string;
+}
 
 @Module({
   providers: [
@@ -10,12 +13,15 @@ import { Request } from 'express';
     {
       provide: PrismaService,
       scope: Scope.REQUEST,
+      durable: true,
       inject: [REQUEST, PrismaClientManager],
       useFactory: (
-        request: Request,
+        ctxPayload: ContextPayload,
         prismaClientManager: PrismaClientManager,
       ) => {
-        const prismaClient = prismaClientManager.getPrismaClient(request);
+        const prismaClient = prismaClientManager.getPrismaClient(
+          ctxPayload.tenantId,
+        );
         return prismaClient;
       },
     },
